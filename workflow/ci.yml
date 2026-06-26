@@ -1,0 +1,54 @@
+# Name of your pipeline — shows in GitHub UI
+name: Todo App CI Pipeline
+
+# TRIGGER: When does this pipeline run?
+on:
+  push:
+    branches: [ main, develop ]   # Run on push to main or develop
+  pull_request:
+    branches: [ main ]            # Run on Pull Requests to main
+
+jobs:
+  # Job 1: Build and Test
+  build-and-test:
+
+    # The machine GitHub gives you to run the pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download your code onto the GitHub machine
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Install Java 17 on the GitHub machine
+      - name: ☕ Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Step 3: Cache Maven dependencies (makes pipeline faster)
+      - name: 📦 Cache Maven Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+
+      # Step 4: Compile the project
+      - name: 🔨 Build with Maven
+        run: mvn clean compile
+
+      # Step 5: Run all tests
+      - name: 🧪 Run Tests
+        run: mvn test
+
+      # Step 6: Package into .jar file (only if tests pass)
+      - name: 📦 Package Application
+        run: mvn package -DskipTests
+
+      # Step 7: Save the .jar file as an artifact
+      - name: 💾 Upload JAR Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: todo-cicd-jar
+          path: target/*.jar

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.wadea.todocicd.integration.TodoControllerIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.660 s -- in com.wadea.todocicd.integration.TodoControllerIntegrationTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.803 s -- in com.wadea.todocicd.integration.TodoControllerIntegrationTest
