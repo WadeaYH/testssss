@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    pom.xml = Project Object Model. This is Maven's build configuration file.
+    It tells Maven:
+      1) What this project is (groupId/artifactId/version)
+      2) What it depends on (dependencies)
+      3) How to build it (parent + plugins)
+    Maven reads this file top-to-bottom whenever you run any `mvn` command.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Every POM must declare which model version of the pom.xml schema it follows. 4.0.0 is the current/only version for Maven 3.x. -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        The <parent> tag inherits configuration from spring-boot-starter-parent.
+        WHY: this parent POM pins compatible versions for every spring-boot-starter-*
+        dependency, configures sensible plugin defaults (like the Surefire test runner
+        and the Spring Boot Maven plugin), and lets us omit <version> on Spring deps below.
+        This is the standard, recommended way to start any Spring Boot Maven project.
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- 3.x line, latest stable patch as of writing. Spring Boot 3 requires Java 17+. -->
+        <version>3.2.5</version>
+        <relativePath/> <!-- lookup parent from Maven repository, not a local relative pom.xml -->
+    </parent>
+
+    <!-- groupId = your organization/namespace, by convention matches the root of your Java package name -->
+    <groupId>com.wadea</groupId>
+    <!-- artifactId = the name of this specific project/jar -->
+    <artifactId>todo-cicd</artifactId>
+    <!-- version of OUR project (not a dependency) - SNAPSHOT means "still in development" -->
+    <version>0.0.1-SNAPSHOT</version>
+    <!-- packaging = jar because Spring Boot apps run as executable "fat jars" with an embedded Tomcat server -->
+    <packaging>jar</packaging>
+
+    <name>todo-cicd</name>
+    <description>Simple Todo REST API built for learning CI/CD with Spring Boot</description>
+
+    <properties>
+        <!-- Pin the Java language level. Spring Boot 3 requires at least Java 17. -->
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <!--
+            spring-boot-starter-web: pulls in everything needed for a REST API:
+            embedded Tomcat server, Spring MVC (controllers, @RequestMapping, etc.),
+            and the Jackson library that converts Java objects <-> JSON automatically.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            spring-boot-starter-data-jpa: brings in Hibernate (the JPA implementation)
+            and Spring Data JPA, which lets us write repository interfaces (like
+            TodoRepository) without writing any SQL or implementation code ourselves.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            spring-boot-starter-validation: gives us Jakarta Bean Validation annotations
+            like @NotBlank on our TodoRequest DTO, so invalid input is rejected
+            automatically with a 400 response before it ever reaches our service layer.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!--
+            H2 Database: a lightweight, file-less, in-memory SQL database.
+            WHY: perfect for learning/demos/CI pipelines because there is nothing to
+            install or configure - the database lives only in memory while the app runs
+            and disappears when it stops. `scope=runtime` means it's only needed when the
+            app actually runs (not needed to compile our code).
+        -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            Lombok: a compile-time annotation processor that auto-generates boilerplate
+            Java code (getters, setters, constructors, builders, toString, equals/hashCode)
+            from annotations like @Data and @Builder. WHY: it keeps our model/DTO classes
+            short and focused on data, instead of hundreds of lines of repetitive methods.
+            `optional=true` tells Maven "this is only needed at compile time, don't bundle
+            it as a runtime dependency for consumers of this project."
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+            spring-boot-starter-test: a single starter that bundles JUnit 5 (the test
+            framework), Mockito (for mocking dependencies), AssertJ (fluent assertions),
+            and Spring's test utilities (like @SpringBootTest, MockMvc). `scope=test`
+            means none of this code is included in the final running application -
+            it's only available while compiling/running tests.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                spring-boot-maven-plugin: enables `mvn spring-boot:run` (run the app
+                directly from Maven) and repackages our jar into an executable
+                "fat jar" (all dependencies bundled inside) during `mvn package`.
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!--
+                        WHY: without this, Maven would try to bundle the Lombok jar
+                        itself into the final executable jar, which is unnecessary
+                        since Lombok only matters at compile time (its annotations
+                        are erased into plain Java bytecode after compilation).
+                    -->
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
