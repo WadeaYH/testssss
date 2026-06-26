@@ -4,7 +4,7 @@ name: Todo App CI Pipeline
 # TRIGGER: When does this pipeline run?
 on:
   push:
-    branches: [ main, develop ]   # Run on push to main or develop
+    branches: [ main, develop, master ]   # Run on push to main or develop
   pull_request:
     branches: [ main ]            # Run on Pull Requests to main
 

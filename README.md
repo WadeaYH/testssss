@@ -1,5 +1,7 @@
 # todo-cicd
 
+[![Todo App CI Pipeline](https://github.com/WadeaYH/testsssss/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/WadeaYH/testsssss/actions/workflows/main.yml)
+
 A simple Todo REST API built with Java 17 and Spring Boot 3, created as a learning project for practicing CI/CD pipelines.
 
 ## Tech Stack
